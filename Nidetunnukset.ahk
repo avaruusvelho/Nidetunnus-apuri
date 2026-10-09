@@ -49,6 +49,18 @@ update(*)
 seuraavatTarrat(*)
 {   
 	Saved := MyGui.Submit()
+	
+	if (Saved.Nidetunnus = "" or InStr(Saved.Nidetunnus, "179N" , 0, 1) = 0)
+	{
+		MsgBox "Nidetunnuksessa virhe! Koitetaan uudestaan, paina 'OK' jatkaaksesi.", "Virheilmoitus"
+		Reload
+	}
+	else if (Saved.Tarramaara = "" or IsNumber(Saved.Tarramaara) = false)
+	{
+		MsgBox "Tarramäärässä virhe! Koitetaan uudestaan, paina 'OK' jatkaaksesi.", "Virheilmoitus"
+		Reload
+	}
+	
 	edellinenNidetunnus := Saved.Nidetunnus
 	varaNidetunnus := edellinenNidetunnus ;Tämä erroreita varten
 	

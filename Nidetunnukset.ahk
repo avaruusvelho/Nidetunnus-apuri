@@ -12,6 +12,7 @@ Esc::
 
 ; Tehdään seuraavaksi alkuvalikko
 MyGui := Gui()
+MyGui.Add("Text",, "TÄMÄ ON TESTIPÄIVITYS ONNISTUIKO????")
 MyGui.Add("Text",, "Syötä ensimmäinen nidetunnus tähän:")
 MyGui.Add("Edit", "w200 vNidetunnus")
 MyGui.Add("Text",, "Syötä tarrojen kokonaismäärä tähän:")

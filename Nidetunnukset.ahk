@@ -1,5 +1,5 @@
-﻿; Nidetunnus-apuri © 2026 by Toni Tonteri is licensed under CC BY-NC-SA 4.0. To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/
-;Testirivi
+; Nidetunnus-apuri © 2026 by Toni Tonteri is licensed under CC BY-NC-SA 4.0. To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/
+; TESTIRIVI
 
 #Requires AutoHotkey v2.0
 
@@ -23,6 +23,7 @@ MyGui.Add("Radio", "Checked veiTulostettu", "Tarroja EI OLE tulostettu")
 MyGui.Add("Radio", "vonTulostettu", "Tarrat ON tulostettu")
 MyGui.Add("Text",, "`nPaina 'OK' sulkeaksesi tämän ruudun ja`nsiirtyäksesi eteenpäin")
 MyGui.Add("Button",, "OK").OnEvent("Click", seuraavatTarrat)
+MyGui.Add("Button",, "Päivitys").OnEvent("Click", update)
 MyGui.Show()
 Return
 
@@ -34,6 +35,11 @@ SendTabs(times)
 		Sleep 100
 	}
 	return
+}
+
+update(*)
+{
+	Download "https://raw.githubusercontent.com/avaruusvelho/Nidetunnus-apuri/refs/heads/main/Nidetunnukset.ahk", "Nidetunnukset.ahk"
 }
 
 seuraavatTarrat(*)

@@ -40,6 +40,7 @@ SendTabs(times)
 update(*)
 {
 	Download "https://raw.githubusercontent.com/avaruusvelho/Nidetunnus-apuri/refs/heads/main/Nidetunnukset.ahk", "Nidetunnukset.ahk"
+	Reload
 }
 
 seuraavatTarrat(*)

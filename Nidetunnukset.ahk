@@ -1,7 +1,7 @@
 ; Nidetunnus-apuri © 2026 by Toni Tonteri is licensed under CC BY-NC-SA 4.0. To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/
-; TESTIRIVI
 
 #Requires AutoHotkey v2.0
+#SingleInstance Force
 
 ;Tehdään hätästop painamalla Esc-näppäintä
 Esc::
@@ -12,7 +12,6 @@ Esc::
 
 ; Tehdään seuraavaksi alkuvalikko
 MyGui := Gui()
-;MyGui.Add("Text",, "TÄMÄ ON TESTIPÄIVITYS ONNISTUIKO????")
 MyGui.Add("Text",, "Syötä ensimmäinen nidetunnus tähän:")
 MyGui.Add("Edit", "w200 vNidetunnus")
 MyGui.Add("Text",, "Syötä tarrojen kokonaismäärä tähän:")
@@ -23,8 +22,8 @@ MyGui.Add("Text",, "Valitse jompikumpi tilanteen mukaan:")
 MyGui.Add("Radio", "Checked veiTulostettu", "Tarroja EI OLE tulostettu")
 MyGui.Add("Radio", "vonTulostettu", "Tarrat ON tulostettu")
 MyGui.Add("Text",, "`nPaina 'OK' sulkeaksesi tämän ruudun ja`nsiirtyäksesi eteenpäin")
-MyGui.Add("Button",, "OK").OnEvent("Click", seuraavatTarrat)
-MyGui.Add("Button",, "Päivitys").OnEvent("Click", update)
+MyGui.Add("Button", "w100 h25", "OK").OnEvent("Click", seuraavatTarrat)
+MyGui.Add("Button", "X+50", "Päivitys").OnEvent("Click", update)
 MyGui.Show()
 Return
 
@@ -42,6 +41,9 @@ update(*)
 {
 	Download "https://raw.githubusercontent.com/avaruusvelho/Nidetunnus-apuri/refs/heads/main/Nidetunnukset.ahk", "Nidetunnukset.ahk"
 	Reload
+	Sleep 1000
+	MsgBox "Päivityksessä meni jotain vikaan, käynnistä ohjelma uudestaan."
+	ExitApp
 }
 
 seuraavatTarrat(*)

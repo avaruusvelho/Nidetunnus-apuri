@@ -1,6 +1,6 @@
 ;Nidetunnus-apuri © 2026 by Toni Tonteri is licensed under CC BY-NC-SA 4.0. To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/
 ;1.5
-versio := 1.5
+versio := "1.5"
 
 #Requires AutoHotkey v2.0
 #SingleInstance Force

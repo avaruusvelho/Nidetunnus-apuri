@@ -1,4 +1,6 @@
 ; Nidetunnus-apuri © 2026 by Toni Tonteri is licensed under CC BY-NC-SA 4.0. To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/
+;1.5
+versio := 1.5
 
 #Requires AutoHotkey v2.0
 #SingleInstance Force
@@ -9,6 +11,8 @@ Esc::
 	MsgBox "Painoit 'HÄTÄSEIS'-nappia, prosessi on nyt keskeytetty."
 	ExitApp
 }
+
+uudelleenAloitus:
 
 ; Tehdään seuraavaksi alkuvalikko
 MyGui := Gui()
@@ -39,11 +43,41 @@ SendTabs(times)
 
 update(*)
 {
-	Download "https://raw.githubusercontent.com/avaruusvelho/Nidetunnus-apuri/refs/heads/main/Nidetunnukset.ahk", "Nidetunnukset.ahk"
-	Reload
-	Sleep 1000
-	MsgBox "Päivityksessä meni jotain vikaan, käynnistä ohjelma uudestaan."
-	ExitApp
+	Download "https://raw.githubusercontent.com/avaruusvelho/Nidetunnus-apuri/refs/heads/main/Nidetunnukset.ahk", "temp.txt"
+	try ;Koitetaan lukea ladattua tiedostoa
+	{
+		TempFileObj := FileOpen(A_ScriptDir "\temp.txt", "r")
+		Sleep 100
+		TempFileObj.ReadLine()
+		uusiVersio := TempFileObj.ReadLine()
+		TempFileObj.Close()
+		Sleep 100
+		FileDelete(A_ScriptDir "\temp.txt")
+		
+		if VerCompare(versio, uusiVersio) < 0
+		{
+			MsgBox "Päivitys löytyi, paina 'OK' aloittaaksesi päivityksen`nNykyinen versio: " versio "`nUusi versio: " uusiVersio
+			Download "https://raw.githubusercontent.com/avaruusvelho/Nidetunnus-apuri/refs/heads/main/Nidetunnukset.ahk", "Nidetunnukset.ahk"
+			Reload
+			Sleep 5000
+			MsgBox "Päivityksessä meni jotain vikaan, käynnistä ohjelma uudestaan."
+			ExitApp
+		}
+		else if VerCompare(versio, uusiVersio) = 0
+		{
+			MsgBox "Sinulla on jo uusin versio käytössä!`nNykyinen versio: " versio "`nUusi versio: " uusiVersio
+		}
+		else
+		{
+			MsgBox "Sinulla on uudempi versio kuin verkossa, tämän ei pitäisi olla mahdollista. Kysy Toni paikalle jos voit.`nNykyinen versio: " versio "`nUusi versio: " uusiVersio
+		}
+	}
+	catch OSError ;Tämä ottaa kiinni jos syystä tai toisesta filua ei löydy
+	{
+		MsgBox "Jotain meni vikaan, kysy Tonilta"
+		ExitApp
+	}
+	
 }
 
 seuraavatTarrat(*)
@@ -125,42 +159,11 @@ seuraavatTarrat(*)
 			jatketaanko := MsgBox("Ohjelma törmäsi ongelmaan, Aurora luultavasti hidastelee. Haluatko jatkaa vai keskeyttää?`n`nJos haluat jatkaa, paina 'Uudelleen'. Muutoin paina 'Peruuta'", "Virheilmoitus", "RetryCancel")
 			if (jatketaanko = "Retry")
 			{
-				Result := MsgBox("Tarkista, että " varaNidetunnus " on viimeisin nidetunnus, joka on tallennettu.`nTämän jälkeen siirry seuraavaan niteeseen, mene nidetunnuksen kohdalle ja paina 'a' jatkaaksesi.", "Virheilmoitus", "YesNo")
-				if (Result = "Yes")
-				{
-					Sleep 100
-					MsgBox "Siirry seuraavaan niteeseen, mene nidetunnuksen kohdalle ja paina 'a' jatkaaksesi."
-					
-					; Odotetaan käyttäjältä a:n painoa
-					KeyWait "a", "D"
-					Goto nidetunnuksenTarkistus
-				}
-				else
-				{
-					FileObj.WriteLine("Suoritus päättyi virheeseen. Viimeisin leikepöydälle jäänyt sisältö: " A_Clipboard " Viimeisin syötetty nidetunnus: " varaNidetunnus)
-					aikaLopussa := A_Now
-					FileObj.WriteLine("Lopetus: " FormatTime(A_Now, ))
-					aikaKulunutSekuntit := DateDiff(aikaLopussa, aikaAlussa, "seconds")
-					aikaKulunutMinuutit := aikaKulunutSekuntit / 60			
-					kokonaisAika := kokonaisaika + aikaKulunutSekuntit
-				
-					;Kirjoitetaan apufilun päälle uusi kokonaisaika
-					HelpFileObj := FileOpen(A_Desktop "\apufilu.txt", "w")
-					HelpFileObj.WriteLine(kokonaisAika)
-					HelpFileObj.WriteLine(niteet)
-					HelpFileObj.Close()
-					
-					FileObj.WriteLine("Tämän suorituksen säästämä aika sekunteissa: " aikaKulunutSekuntit)
-					FileObj.WriteLine("Tämän suorituksen säästämä aika minuuteissa: " aikaKulunutMinuutit)
-					FileObj.WriteLine("Kertynyt säästetty kokonaistyöaika sekunteissa: " kokonaisAika)
-					FileObj.WriteLine("Kertynyt säästetty kokonaistyöaika minuuteissa: " kokonaisAika / 60)
-					FileObj.WriteLine("Nidetarrojen määrä kokonaisuudessaan tähän asti: " niteet)
-					Sleep 100
-					FileObj.Close()
-					Sleep 100
-					MsgBox "Valmista! Voit sulkea ikkunan.`n`n---------------Sitten vähän ihanaa statistiikkaa---------------`nTähän suoritukseen mennyt aika sekunteissa: " aikaKulunutSekuntit "`nTähän suoritukseen mennyt aika minuuteissa: " aikaKulunutMinuutit "`nKertynyt säästetty kokonaistyöaika minuuteissa: " kokonaisAika / 60 "`nNidetarrojen määrä kokonaisuudessaan tähän asti: " niteet
-					ExitApp
-				}
+				MsgBox("Tarkista, että " varaNidetunnus " on viimeisin nidetunnus, joka on tallennettu.`nTämän jälkeen siirry seuraavaan niteeseen, mene nidetunnuksen kohdalle ja paina 'a' jatkaaksesi.", "Uusi yritys",)
+				Sleep 100
+				; Odotetaan käyttäjältä a:n painoa
+				KeyWait "a", "D"
+				Goto nidetunnuksenTarkistus
 			}
 			else
 			{
@@ -178,14 +181,14 @@ seuraavatTarrat(*)
 				HelpFileObj.Close()
 				
 				FileObj.WriteLine("Tämän suorituksen säästämä aika sekunteissa: " aikaKulunutSekuntit)
-				FileObj.WriteLine("Tämän suorituksen säästämä aika minuuteissa: " aikaKulunutMinuutit)
+				FileObj.WriteLine("Tämän suorituksen säästämä aika minuuteissa: " Round(aikaKulunutMinuutit))
 				FileObj.WriteLine("Kertynyt säästetty kokonaistyöaika sekunteissa: " kokonaisAika)
-				FileObj.WriteLine("Kertynyt säästetty kokonaistyöaika minuuteissa: " kokonaisAika / 60)
+				FileObj.WriteLine("Kertynyt säästetty kokonaistyöaika minuuteissa: " Round(kokonaisAika / 60))
 				FileObj.WriteLine("Nidetarrojen määrä kokonaisuudessaan tähän asti: " niteet)
 				Sleep 100
 				FileObj.Close()
 				Sleep 100
-				MsgBox "Valmista! Voit sulkea ikkunan.`n`n---------------Sitten vähän ihanaa statistiikkaa---------------`nTähän suoritukseen mennyt aika sekunteissa: " aikaKulunutSekuntit "`nTähän suoritukseen mennyt aika minuuteissa: " aikaKulunutMinuutit "`nKertynyt säästetty kokonaistyöaika minuuteissa: " kokonaisAika / 60 "`nNidetarrojen määrä kokonaisuudessaan tähän asti: " niteet
+				MsgBox "Valmista! Voit sulkea ikkunan.`n`n---------------Sitten vähän ihanaa statistiikkaa---------------`nTähän suoritukseen mennyt aika sekunteissa: " aikaKulunutSekuntit "`nTähän suoritukseen mennyt aika minuuteissa: " Round(aikaKulunutMinuutit) "`nKertynyt säästetty kokonaistyöaika minuuteissa: " Round(kokonaisAika / 60) "`nNidetarrojen määrä kokonaisuudessaan tähän asti: " niteet
 				ExitApp
 			}
 		}
@@ -328,12 +331,15 @@ seuraavatTarrat(*)
 		HelpFileObj.Close()
 		
 		FileObj.WriteLine("Tämän suorituksen säästämä aika sekunteissa: " aikaKulunutSekuntit)
-		FileObj.WriteLine("Tämän suorituksen säästämä aika minuuteissa: " aikaKulunutMinuutit)
+		FileObj.WriteLine("Tämän suorituksen säästämä aika minuuteissa: " Round(aikaKulunutMinuutit))
 		FileObj.WriteLine("Kertynyt säästetty kokonaistyöaika sekunteissa: " kokonaisAika)
-		FileObj.WriteLine("Kertynyt säästetty kokonaistyöaika minuuteissa: " kokonaisAika / 60)
+		FileObj.WriteLine("Kertynyt säästetty kokonaistyöaika minuuteissa: " Round(kokonaisAika / 60))
 		FileObj.WriteLine("Nidetarrojen määrä kokonaisuudessaan tähän asti: " niteet)
 		Sleep 500
 		FileObj.Close()
-		MsgBox "Valmista! Voit sulkea ikkunan.`n`n---------------Sitten vähän ihanaa statistiikkaa---------------`nTähän suoritukseen mennyt aika sekunteissa: " aikaKulunutSekuntit "`nTähän suoritukseen mennyt aika minuuteissa: " aikaKulunutMinuutit "`nKertynyt säästetty kokonaistyöaika minuuteissa: " kokonaisAika / 60 "`nNidetarrojen määrä kokonaisuudessaan tähän asti: " niteet
-		ExitApp
+		kylVaiEi := MsgBox("Valmista! Voit halutessasi aloittaa seuraavan nimekkeen tarroituksen suoraan painamalla 'Kyllä'.`nVoit myös lopettaa painamalla 'Ei'. Tässä perään myös kivaa statistiikkaa:`n------------------------------------------------------------`nTähän suoritukseen mennyt aika sekunteissa: " aikaKulunutSekuntit "`nTähän suoritukseen mennyt aika minuuteissa (pyöristettynä): " Round(aikaKulunutMinuutit) "`nKertynyt säästetty kokonaistyöaika minuuteissa (pyöristettynä): " Round(kokonaisAika / 60) "`nNidetarrojen määrä kokonaisuudessaan tähän asti: " niteet,, "YesNo")
+		if kylVaiEi = "Yes"
+			Reload
+		else
+			ExitApp
 	}

@@ -1,4 +1,4 @@
-; Nidetunnus-apuri © 2026 by Toni Tonteri is licensed under CC BY-NC-SA 4.0. To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/
+;Nidetunnus-apuri © 2026 by Toni Tonteri is licensed under CC BY-NC-SA 4.0. To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/
 ;1.5
 versio := 1.5
 
@@ -50,6 +50,7 @@ update(*)
 		Sleep 100
 		TempFileObj.ReadLine()
 		uusiVersio := TempFileObj.ReadLine()
+		uusiVersio := SubStr(uusiVersio, 2)
 		TempFileObj.Close()
 		Sleep 100
 		FileDelete(A_ScriptDir "\temp.txt")

@@ -59,9 +59,10 @@ update(*)
 		{
 			MsgBox "Päivitys löytyi, paina 'OK' aloittaaksesi päivityksen`nNykyinen versio: " versio "`nUusi versio: " uusiVersio
 			Download "https://raw.githubusercontent.com/avaruusvelho/Nidetunnus-apuri/refs/heads/main/Nidetunnukset.ahk", "Nidetunnukset.ahk"
+			MsgBox "Päivityksen lataus onnistui, mutta sovellus vaatii uudelleenkäynnistyksen. Paina 'OK' käynnistääksesi ohjelman uudelleen."
 			Reload
 			Sleep 5000
-			MsgBox "Päivityksessä meni jotain vikaan, käynnistä ohjelma uudestaan."
+			MsgBox "Törmättiin odottamattomaan ongelmaan, käynnistä ohjelma uudestaan."
 			ExitApp
 		}
 		else if VerCompare(versio, uusiVersio) = 0

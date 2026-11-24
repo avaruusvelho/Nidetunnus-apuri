@@ -1,6 +1,6 @@
-;Nidetunnus-apuri © 2026 by Toni Tonteri is licensed under CC BY-NC-SA 4.0. To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/
-;1.5
-versio := "1.5"
+;T.A.R.M.O: Todella Ammattimainen, Reipas ja Mukautuva Ohjelma © 2026 by Toni Tonteri is licensed under CC BY-NC-SA 4.0. To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/
+;1.6
+versio := "1.6"
 
 #Requires AutoHotkey v2.0
 #SingleInstance Force
@@ -16,6 +16,9 @@ uudelleenAloitus:
 
 ; Tehdään seuraavaksi alkuvalikko
 MyGui := Gui()
+MyGui.Title := "T.A.R.M.O"
+MyGui.Add("Text", "w200 Center", "T.A.R.M.O:")
+MyGui.Add("Text", "w200 Center", "Todella Ammattimainen, Reipas ja Mukautuva Ohjelma")
 MyGui.Add("Text",, "Syötä ensimmäinen nidetunnus tähän:")
 MyGui.Add("Edit", "w200 vNidetunnus")
 MyGui.Add("Text",, "Syötä tarrojen kokonaismäärä tähän:")
@@ -24,12 +27,22 @@ MyGui.Add("Text",, "HOX! Suljettuasi tämän ruudun,`nvalitse auki olevan ensimm
 MyGui.Add("Text",, "HÄTÄSEIS-NAPPI: ESC`n")
 MyGui.Add("Text",, "Valitse jompikumpi tilanteen mukaan:")
 MyGui.Add("Radio", "Checked veiTulostettu", "Tarroja EI OLE tulostettu")
-MyGui.Add("Radio", "vonTulostettu", "Tarrat ON tulostettu")
+MyGui.Add("Radio", "vonTulostettu", "Tarrat ON tulostettu`n")
+if (A_UserName = "tonterto23")
+{
+	MyGui.Add("Button",, "Tonin genrenappi").onEvent("Click", genreLisays)
+}
 MyGui.Add("Text",, "`nPaina 'OK' sulkeaksesi tämän ruudun ja`nsiirtyäksesi eteenpäin")
 MyGui.Add("Button", "w100 h25", "OK").OnEvent("Click", seuraavatTarrat)
 MyGui.Add("Button", "X+50", "Päivitys").OnEvent("Click", update)
 MyGui.Show()
-Return
+;Return
+
+; Tehdään sitten valmiiksi genren lisäyksen Gui
+genreGui := Gui()
+genreGui.Add("Text",, "Syötä nidetunnukset tähän lootaan:")
+genreGui.Add("Edit", "Multi",)
+genreGui.Add("Text",, "Valitse tästä pudotusvalikosta haluamasi genre:")
 
 SendTabs(times)
 {
@@ -39,6 +52,52 @@ SendTabs(times)
 		Sleep 100
 	}
 	return
+}
+
+genreLisays(*)
+{
+	valittuFilu := FileSelect(3, A_Desktop, "Valitse tiedosto", "Text Documents (*.txt; *.doc)")
+	if (valittuFilu = "")
+	{
+		MsgBox "Tiedostoa ei valittu."
+	}
+	else
+	{
+		;MsgBox "Valitun tiedoston polku:`n" valittuFilu
+		try ;Koitetaan lukea apufilua
+		{
+			;genreLista := FileOpen(valittuFilu, "r")
+			isbnLause := ""
+			Loop read, valittuFilu
+			{
+				isbnLause := isbnLause A_LoopReadLine "/is TAI "
+			}
+			;genreLista.Close()
+			uusiKopiointi:
+			A_Clipboard := isbnLause
+			kopiointi := MsgBox("Tiedoston luku onnistui ja lauseke on nyt kopioitu leikepöydälle.`nTarvittaessa voit kopioida lausekkeen uudelleen.", "Genrelauseke muodostettu", "RetryCancel")
+			if (kopiointi = "Retry")
+			{
+				Goto uusiKopiointi
+			}
+			else
+			{
+				poistetaanko := MsgBox("Tyhjätäänkö tiedosto?", "Tyhjätäänkö?", "YesNo")
+				if (poistetaanko = "Yes")
+				{
+					;FileDelete(valittuFilu)
+					;Kirjoitetaan filun päälle uusi filu eli tyhjätään se
+					tyhjattavaFilu := FileOpen(valittuFilu, "w")
+					tyhjattavaFilu.Close()
+					MsgBox "Tiedosto on nyt tyhjätty."
+				}
+			}
+		}
+		catch OSError ;Tämä ottaa kiinni jos syystä tai toisesta filua ei löydy
+		{
+			MsgBox "Jotakin meni pieleen."
+		}
+	}
 }
 
 update(*)
